@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Xml;
 
+
 namespace CupMarker.Views
 {
     public partial class MainWindow : Window
@@ -21,6 +22,8 @@ namespace CupMarker.Views
             InitializeComponent();
             DataContext = viewModel;
             this.viewModel = viewModel;
+            this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
+            
         }
 
         private void Line_MouseDown(object sender, MouseButtonEventArgs e)
@@ -54,5 +57,11 @@ namespace CupMarker.Views
             isDragging = false;
             Mouse.Capture(null);
         }
+
+        private void PreviewCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            viewModel.CanvasHeight = e.NewSize.Height;
+        }
+
     }
 }

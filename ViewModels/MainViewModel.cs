@@ -1,8 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using CupMarker.AutoItScript;
+using CupMarker.Helpers;
 using CupMarker.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -17,17 +21,31 @@ namespace CupMarker.ViewModels
     public partial class MainViewModel : ObservableObject
     {
 
+
+
         public MainViewModel()
         {
             GetOrderCommand = new AsyncRelayCommand(GetOrderCommandAsync);
-            Y1 = 0;
-            Y2 = 592;
+            
         }
-        [ObservableProperty]
+        [ObservableProperty] private double canvasHeight;
+
+
+        public string SvgLocalPath { get; set; } = "";
+
+        public string PreviewLocalPath { get; set; } = "";
+
         private double heightCupMark;
+        private double heightCupMarkMM;
 
         [ObservableProperty]
+        private string heightCupMarkString = "";
+
         private double centerYMark;
+        private double centerYMarkDifferenceMM;
+
+        [ObservableProperty]
+        private string centerYMarkString = "";
 
 
         [ObservableProperty]
@@ -45,20 +63,30 @@ namespace CupMarker.ViewModels
         [ObservableProperty]
         private double y2;
 
-        private OrderInfo? CupOrderInfo { get; set; } = null;
+        [ObservableProperty]
+        private OrderInfo? cupOrderInfo;
 
         [ObservableProperty]
-        private BitmapImage previewImage;
+        private CupConfig? activeConfig;
+
+        [ObservableProperty]
+        private BitmapImage? previewImage;
 
         public IAsyncRelayCommand GetOrderCommand { get; }
 
         private async Task GetOrderCommandAsync()
         {
-            await FetchOrderInfo();
+            if(Barcode == null || Barcode.Length == 0) return;
 
+            await FetchOrderInfo();
+            if (CupOrderInfo == null) return;
             await DownloadSvgAsync();
 
             await DownloadPreviewAsync();
+            Y1 = 0;
+            Y2 = CanvasHeight;
+            recalculateHeightAndCenterY();
+
 
             HasOrderInfoLoaded = true;
         }
@@ -70,8 +98,12 @@ namespace CupMarker.ViewModels
             using HttpClient client = new HttpClient();
 
             // 1. Get the JSON
-            var jsonString = await client.GetStringAsync(jsonUrl);
-            CupOrderInfo = JsonSerializer.Deserialize<OrderInfo>(jsonString);
+            try
+            {
+                var jsonString = await client.GetStringAsync(jsonUrl);
+                CupOrderInfo = JsonSerializer.Deserialize<OrderInfo>(jsonString);
+            }
+            catch { }
         }
 
 
@@ -80,7 +112,7 @@ namespace CupMarker.ViewModels
             if (CupOrderInfo?.SvgUrl == null)
                 return;
             
-            CupOrderInfo.SvgLocalPath = await DownloadFileAsync(CupOrderInfo.SvgUrl);
+            SvgLocalPath = await DownloadFileAsync(CupOrderInfo.SvgUrl);
         }
 
         private async Task DownloadPreviewAsync()
@@ -88,18 +120,18 @@ namespace CupMarker.ViewModels
             if (CupOrderInfo?.PreviewUrl == null)
                 return;
 
-            CupOrderInfo.PreviewLocalPath = await DownloadFileAsync(CupOrderInfo.PreviewUrl);
-            if (CupOrderInfo.PreviewLocalPath != null)
+            PreviewLocalPath = await DownloadFileAsync(CupOrderInfo.PreviewUrl);
+            if (PreviewLocalPath != null)
             {
                 PreviewImage = new BitmapImage();
                 PreviewImage.BeginInit();
-                PreviewImage.UriSource = new Uri(CupOrderInfo.PreviewLocalPath, UriKind.Absolute);
+                PreviewImage.UriSource = new Uri(PreviewLocalPath, UriKind.Absolute);
                 PreviewImage.CacheOption = BitmapCacheOption.OnLoad;
                 PreviewImage.EndInit();
             }
         }
 
-        private async Task<string?> DownloadFileAsync(string url)
+        private async Task<string> DownloadFileAsync(string url)
         {
             Uri uri = new Uri(url);
             string extension = System.IO.Path.GetExtension(uri.AbsolutePath);
@@ -110,7 +142,7 @@ namespace CupMarker.ViewModels
             if (parts.Length > 1)
                 filename = parts[1];
             filename = $"{prefix}{filename}{extension}";
-            string folder = AppDomain.CurrentDomain.BaseDirectory + "/tmp_images/";
+            string folder = AppDomain.CurrentDomain.BaseDirectory + "tmp_images\\";
             Directory.CreateDirectory(folder);
 
             string path =  folder + filename;
@@ -130,6 +162,7 @@ namespace CupMarker.ViewModels
         [RelayCommand]
         private void StartJob()
         {
+            EzCadAutoItScript.DoTheJob(new AutoScriptParam(SvgLocalPath,heightCupMarkMM, centerYMarkDifferenceMM));
         }
 
         partial void OnBarcodeSelectedChanged(string value)
@@ -138,16 +171,43 @@ namespace CupMarker.ViewModels
         }
         partial void OnY1Changed(double value)
         {
-            recalculateHeight();
+            recalculateHeightAndCenterY();
         }
         partial void OnY2Changed(double value)
         {
-            recalculateHeight();
+            recalculateHeightAndCenterY();
         }
-        public void recalculateHeight()
+        public void recalculateHeightAndCenterY()
         {
-            HeightCupMark = Y2 - Y1;
-            CenterYMark = (Y1 + Y2)/2;
+            if (ActiveConfig != null)
+            {
+                heightCupMark = Y2 - Y1;
+                heightCupMarkMM = heightCupMark * ActiveConfig.HeightInMM / CanvasHeight;
+                centerYMark = (Y1 + Y2) / 2;
+
+                double pixelPerMM = CanvasHeight / ActiveConfig.HeightInMM;
+                double selectedCenterYMarkInMM = (CanvasHeight - centerYMark) / pixelPerMM;
+
+                centerYMarkDifferenceMM = selectedCenterYMarkInMM - ActiveConfig.CenterYInMM;
+
+                updateLabels();
+            }
         }
+
+        partial void OnCupOrderInfoChanged(OrderInfo? value)
+        {
+            if (value?.Title is null) return;
+
+            // Extract size from title, e.g. "26oz ..." → "26oz"
+            var size = value.Title.Split(' ').FirstOrDefault();
+            ActiveConfig = ConfigHelper.GetBySize(size);
+        }
+
+        private void updateLabels()
+        {
+            HeightCupMarkString = $"Height: {heightCupMarkMM:F1}mm";
+            CenterYMarkString = $"Center Y: {centerYMarkDifferenceMM:F1}mm";
+        }
+
     }
 }

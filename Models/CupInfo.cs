@@ -46,8 +46,6 @@ namespace CupMarker.Models
         [JsonPropertyName("created")]
         public DateTime Created { get; set; }
 
-        public string? SvgLocalPath { get; set; }
 
-        public string? PreviewLocalPath { get; set; }
     }
 }

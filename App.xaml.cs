@@ -33,6 +33,22 @@ namespace CupMarker
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+            DateTime expiry = new DateTime(2025, 11, 11); // demo expires after this date
+
+            var demoExpired = DateTime.Now > expiry;
+            if (demoExpired)
+            {
+                MessageBox.Show(
+                    "Demo version expired. Please contact the developer for the full version.",
+                    "Demo Expired",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning
+                );
+
+                // Optional: stop app from launching
+                Shutdown();
+                return;
+            }
 
             // resolve and show main window
             var mainWindow = Services.GetRequiredService<MainWindow>();
