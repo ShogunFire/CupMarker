@@ -36,7 +36,7 @@ namespace CupMarker.AutoItScript
 
             //open svg import with shortcut
             AutoItX.Send("^b");
-            AutoItX.WinWaitActive("Ouvrir","",2);
+            AutoItX.WinWaitActive("Open","",2);
             AutoItX.Send(parameters.SvgfilePath);
             AutoItX.Send("{ENTER}");
             AutoItX.WinWaitActive("EzCad","",2);
@@ -47,8 +47,12 @@ namespace CupMarker.AutoItScript
 
             //open transform menu
 
-            AutoItX.MouseClick("left", 131, 29);
-            AutoItX.MouseClick("left", 170, 100);
+            int xModifyMenuItem = Int32.Parse(ConfigurationManager.AppSettings["xModifyMenuItem"]);
+            int yModifyMenuItem = Int32.Parse(ConfigurationManager.AppSettings["yModifyMenuItem"]);
+            int xTransformMenuItem = Int32.Parse(ConfigurationManager.AppSettings["xTransformMenuItem"]);
+            int yTransformMenuItem = Int32.Parse(ConfigurationManager.AppSettings["yTransformMenuItem"]);
+            AutoItX.MouseClick("left", xModifyMenuItem, yModifyMenuItem);
+            AutoItX.MouseClick("left", xTransformMenuItem, yTransformMenuItem);
             AutoItX.WinWaitActive("Transform", "", 2);
 
             // rotate button
@@ -69,8 +73,10 @@ namespace CupMarker.AutoItScript
             AutoItX.ControlClick("EzCad", "", "Button201");
 
             //double click to select the text in x coordinate and put centerYInIt
-            AutoItX.MouseClick("left", 50, 450);
-            AutoItX.MouseClick("left", 50, 450);
+            int xPositionXInput = Int32.Parse(ConfigurationManager.AppSettings["xPositionXInput"]);
+            int yPositionXInput = Int32.Parse(ConfigurationManager.AppSettings["yPositionXInput"]);
+
+            AutoItX.MouseClick("left", xPositionXInput, yPositionXInput, 2);
             AutoItX.Send($"{parameters.CenterY:F1}");
 
             //Go to y coordinate en set 0
@@ -82,6 +88,9 @@ namespace CupMarker.AutoItScript
             AutoItX.Send($"{parameters.Height:F1}");
 
             // Open hatch and validate
+
+            int xHatchButton = Int32.Parse(ConfigurationManager.AppSettings["xHatchButton"]);
+            int yHatchButton = Int32.Parse(ConfigurationManager.AppSettings["yHatchButton"]);
             AutoItX.MouseClick("left", 428, 61);
             AutoItX.WinWaitActive("Hatch", "", 2);
             AutoItX.ControlClick("Hatch", "", "Button1");
