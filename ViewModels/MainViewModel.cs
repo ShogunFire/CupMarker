@@ -15,6 +15,10 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Xml.Linq;
+using SharpVectors.Converters;
+using SharpVectors.Renderers.Wpf;
+using System.Windows;
 
 namespace CupMarker.ViewModels
 {
@@ -80,11 +84,14 @@ namespace CupMarker.ViewModels
 
             await FetchOrderInfo();
             if (CupOrderInfo == null) return;
+
+
+
             await DownloadSvgAsync();
 
             await DownloadPreviewAsync();
-            Y1 = 0;
-            Y2 = CanvasHeight;
+            //Y1 = 0;
+            //Y2 = CanvasHeight;
             recalculateHeightAndCenterY();
 
 
@@ -113,6 +120,7 @@ namespace CupMarker.ViewModels
                 return;
             
             SvgLocalPath = await DownloadFileAsync(CupOrderInfo.SvgUrl);
+            GetHeightSvg(SvgLocalPath);
         }
 
         private async Task DownloadPreviewAsync()
@@ -154,7 +162,19 @@ namespace CupMarker.ViewModels
 
             return path;
         }
+        public void GetHeightSvg(string svgPath)
+        {
+            var settings = new WpfDrawingSettings();
+            var reader = new FileSvgReader(settings);
+            var drawing = reader.Read(svgPath);
 
+            Rect bounds = drawing.Bounds;
+            double height = bounds.Height;
+            double y = bounds.Y;
+
+            Y1 = y/1600*CanvasHeight;
+            Y2 = Y1 + (height/1600*CanvasHeight);
+        }
 
 
 
@@ -162,6 +182,7 @@ namespace CupMarker.ViewModels
         [RelayCommand]
         private void StartJob()
         {
+            
             EzCadAutoItScript.DoTheJob(new AutoScriptParam(SvgLocalPath,heightCupMarkMM, centerYMarkDifferenceMM));
         }
 

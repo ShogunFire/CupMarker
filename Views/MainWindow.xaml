@@ -43,12 +43,6 @@
                     
                      >
                         <Canvas  x:Name="PreviewCanvas" Background="{StaticResource CanvasBackgroundBrush}" Height="592" SizeChanged="PreviewCanvas_SizeChanged">
-                            <!--<TextBlock Text="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Canvas}}"
-                                FontSize="16"
-                                Foreground="{StaticResource PlaceholderBrush}"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Visibility="{Binding HasOrderInfoLoaded, Converter={StaticResource BoolToVis}}"/>-->
 
                             <TextBlock Text="{Binding HeightCupMarkString}"
                                 FontSize="16"

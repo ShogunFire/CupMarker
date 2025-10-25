@@ -1,17 +1,17 @@
 [
   {
     "Size": "10oz",
-    "HeightInMM": 147.8,
-    "CenterYInMM": 61
+    "HeightInMM": 145,
+    "CenterYInMM": 52
   },
   {
     "Size": "16oz",
-    "HeightInMM": 164.2,
-    "CenterYInMM": 87.7
+    "HeightInMM": 169,
+    "CenterYInMM": 85.8
   },
   {
     "Size": "26oz",
-    "HeightInMM": 210,
-    "CenterYInMM": 139.14
+    "HeightInMM": 211,
+    "CenterYInMM": 137
   }
 ]

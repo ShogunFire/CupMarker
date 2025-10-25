@@ -1,9 +1,10 @@
 ﻿using CupMarker.ViewModels;
 using CupMarker.Views;
+using Microsoft.Extensions.DependencyInjection;
 using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Windows;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace CupMarker
 {
@@ -33,21 +34,27 @@ namespace CupMarker
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            DateTime expiry = new DateTime(2025, 11, 11); // demo expires after this date
-
-            var demoExpired = DateTime.Now > expiry;
-            if (demoExpired)
+            string folderPath = Path.Combine(Environment.CurrentDirectory, "tmp_images");
+            try
             {
-                MessageBox.Show(
-                    "Demo version expired. Please contact the developer for the full version.",
-                    "Demo Expired",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning
-                );
-
-                // Optional: stop app from launching
-                Shutdown();
-                return;
+                if (Directory.Exists(folderPath))
+                {
+                    foreach (var file in Directory.GetFiles(folderPath))
+                    {
+                        try
+                        {
+                            File.Delete(file);
+                        }
+                        catch
+                        {
+                            // Ignore if the file is in use or can't be deleted
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // Silent fail — nothing shown
             }
 
             // resolve and show main window
