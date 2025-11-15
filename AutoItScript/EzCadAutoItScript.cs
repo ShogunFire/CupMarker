@@ -103,7 +103,7 @@ namespace CupMarker.AutoItScript
                 //open svg import with shortcut
                 AutoItX.Send("^b");
                 AutoItX.WinWaitActive("Open", "", 2);
-                AutoItX.Send(parameters.SvgfilePath);
+                AutoItX.Send(parameters.DxfFilePath);
                 AutoItX.Send("{ENTER}");
                 AutoItX.WinWaitActive(ezCadWindow, 2);
 
@@ -197,6 +197,55 @@ namespace CupMarker.AutoItScript
                 AutoItX.MouseClick("left", rectEzCadWindow.X + xHatchButton, rectEzCadWindow.Y + yHatchButton + 10);
                 AutoItX.WinWaitActive("Hatch", "", 2);
                 AutoItX.ControlClick("Hatch", "", "Button1");
+
+                Thread.Sleep(1000);
+
+                //Open RotaryMark
+                int xLazerMenuItem = Int32.Parse(ConfigurationManager.AppSettings["xLazerMenuItem"]);
+                int yLazerMenuItem = Int32.Parse(ConfigurationManager.AppSettings["yLazerMenuItem"]);
+                AutoItX.MouseClick("left", rectEzCadWindow.X + xLazerMenuItem, rectEzCadWindow.Y + yLazerMenuItem + 10);
+
+                int xRotaryMarkMenuItem = Int32.Parse(ConfigurationManager.AppSettings["xRotaryMarkMenuItem"]);
+                int yRotaryMarkMenuItem = Int32.Parse(ConfigurationManager.AppSettings["yRotaryMarkMenuItem"]);
+
+                AutoItX.MouseClick("left", rectEzCadWindow.X + xRotaryMarkMenuItem, rectEzCadWindow.Y + yRotaryMarkMenuItem + 10);
+
+                AutoItX.WinWaitActive("RotaryMark", "", 2);
+
+                AutoItX.ControlSetText("RotaryMark", "", "Edit3", "0.100");
+
+                bool continousIsCkecked  = AutoItX.ControlCommand("RotaryMark", "", "Button2", "IsChecked", "").Equals("1");
+                if (continousIsCkecked)
+                {
+                    AutoItX.ControlCommand("RotaryMark", "", "Button2", "UnCheck", "");
+                }
+
+                bool markSelectedIsCkecked = AutoItX.ControlCommand("RotaryMark", "", "Button5", "IsChecked", "").Equals("1");
+                if (markSelectedIsCkecked)
+                {
+                    AutoItX.ControlCommand("RotaryMark", "", "Button5", "UnCheck", "");
+                }
+
+                bool forceAllSplitIsCkecked = AutoItX.ControlCommand("RotaryMark", "", "Button10", "IsChecked", "").Equals("1");
+                if (!forceAllSplitIsCkecked)
+                {
+                    AutoItX.ControlCommand("RotaryMark", "", "Button10", "Check", "");
+                }
+
+                bool markBySplitLineIsCkecked = AutoItX.ControlCommand("RotaryMark", "", "Button12", "IsChecked", "").Equals("1");
+                if (markBySplitLineIsCkecked)
+                {
+                    AutoItX.ControlCommand("RotaryMark", "", "Button12", "UnCheck", "");
+                }
+
+                AutoItX.ControlClick("RotaryMark", "", "Button11");
+                AutoItX.WinWaitActive("Part Diameter", "", 2);
+                AutoItX.ControlSetText("Part Diameter", "", "Edit1", parameters.PartDiameter.ToString("F1"));
+                AutoItX.ControlClick("Part Diameter", "", "Button1");
+
+
+
+
             }
             catch (Exception e)
             {

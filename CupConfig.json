@@ -2,16 +2,32 @@
   {
     "Size": "10oz",
     "HeightInMM": 145,
-    "CenterYInMM": 52
+    "CenterYInMM": 52,
+
+    "CupMarkableHeightInMM": 54,
+    "BottomDiameterInMM": 83,
+    "TopDiameterInMM": 91,
+    "CupMarkerZeroHeightInMM": 0
   },
   {
     "Size": "16oz",
     "HeightInMM": 169,
-    "CenterYInMM": 85.8
+    "CenterYInMM": 85.8,
+
+
+    "CupMarkableHeightInMM": 109,
+    "BottomDiameterInMM": 69,
+    "TopDiameterInMM": 91,
+    "CupMarkerZeroHeightInMM": 57
   },
   {
     "Size": "26oz",
     "HeightInMM": 211,
-    "CenterYInMM": 137
+    "CenterYInMM": 137,
+
+    "CupMarkableHeightInMM": 151,
+    "BottomDiameterInMM": 74,
+    "TopDiameterInMM": 91,
+    "CupMarkerZeroHeightInMM": 101
   }
 ]

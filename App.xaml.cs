@@ -1,4 +1,7 @@
-﻿using CupMarker.ViewModels;
+﻿using CupMarker.Models;
+using CupMarker.Services;
+using CupMarker.Services.Interfaces;
+using CupMarker.ViewModels;
 using CupMarker.Views;
 using Microsoft.Extensions.DependencyInjection;
 using System.Configuration;
@@ -19,14 +22,21 @@ namespace CupMarker
         {
             var services = new ServiceCollection();
 
+          
+
             // register your viewmodels
-            services.AddTransient<MainViewModel>();
+            services.AddTransient<CupControlViewModel>();
+            services.AddTransient<LoginControlViewModel>();
 
             // register views
             services.AddTransient<MainWindow>();
+            services.AddTransient<CupControl>();
+            services.AddTransient<LoginControl>();
 
             // register any services (e.g. IFileService, ISettingsService, etc.)
-            // services.AddSingleton<IFileService, FileService>();
+            services.AddSingleton<INavigationService, NavigationService>();
+            services.AddSingleton<INetSuiteApiService, NetSuiteApiService>();
+            services.AddSingleton<ISessionService, SessionService>();
 
             Services = services.BuildServiceProvider();
         }
@@ -56,6 +66,11 @@ namespace CupMarker
             {
                 // Silent fail — nothing shown
             }
+
+           
+
+            var nav = Services.GetRequiredService<INavigationService>();
+            nav.Navigate<LoginControlViewModel>();
 
             // resolve and show main window
             var mainWindow = Services.GetRequiredService<MainWindow>();

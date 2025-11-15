@@ -1,5 +1,4 @@
-﻿using CupMarker.Services.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,15 +16,13 @@ using System.Windows.Shapes;
 namespace CupMarker.Views
 {
     /// <summary>
-    /// Logique d'interaction pour MainWindow.xaml
+    /// Logique d'interaction pour LoginControl.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class LoginControl : UserControl
     {
-        public MainWindow(INavigationService navigationService)
+        public LoginControl()
         {
             InitializeComponent();
-            DataContext = navigationService;
-            this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
         }
     }
 }

@@ -34,6 +34,9 @@ namespace CupMarker.Models
         [JsonPropertyName("svgUrl")]
         public string? SvgUrl { get; set; }
 
+        [JsonPropertyName("dxfUrl")]
+        public string? DxfUrl { get; set; }
+
         [JsonPropertyName("color")]
         public string? Color { get; set; }
 

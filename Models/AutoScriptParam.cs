@@ -8,15 +8,18 @@ namespace CupMarker.Models
 {
     public class AutoScriptParam
     {
-        public AutoScriptParam(string svgfilePath, double height, double centerY)
+        public AutoScriptParam(string dxfFilePath, double height, double centerY, double partDiameter)
         {
-            this.SvgfilePath = svgfilePath;
+            this.DxfFilePath = dxfFilePath;
             this.Height = height;
             this.CenterY = centerY;
+            this.PartDiameter = partDiameter;
         }
-        public string SvgfilePath;
+        public string DxfFilePath;
         public double Height;
         public double CenterY;
+
+        public double PartDiameter;
 
     }
 }
