@@ -6,8 +6,7 @@ using CupMarker.Helpers;
 using CupMarker.Models;
 using CupMarker.Services;
 using CupMarker.Services.Interfaces;
-using netDxf;
-using netDxf.Entities;
+
 using SharpVectors.Converters;
 using SharpVectors.Renderers.Wpf;
 using System;
@@ -25,7 +24,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 using System.Xml.Linq;
-using static netDxf.Entities.HatchBoundaryPath;
+
 
 namespace CupMarker.ViewModels
 {
