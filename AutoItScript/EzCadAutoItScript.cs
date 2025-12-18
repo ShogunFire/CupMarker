@@ -94,6 +94,10 @@ namespace CupMarker.AutoItScript
                     return;
                 }
                 var rectEzCadWindow = AutoItX.WinGetPos(ezCadWindow);
+
+                //Close rotary mark window if open
+                AutoItX.ControlClick("RotaryMark", "", "Button1");
+
                 // Open new  and say no to do you want to save
                 AutoItX.Send("^n");
                 AutoItX.WinWaitActive("EzCad", "Yes", 2);
@@ -163,7 +167,7 @@ namespace CupMarker.AutoItScript
                 //set the position x
                 AutoItX.ControlSetText("Transform", "", "Edit1", $"{parameters.CenterY:F1}");
                 //set the position y
-                AutoItX.ControlSetText("Transform", "", "Edit2", "0");
+                AutoItX.ControlSetText("Transform", "", "Edit2", (parameters.PartDiameter* 1.57).ToString("F1"));
                 //Apply button
                 AutoItX.ControlClick("Transform", "", "Button18");
 
@@ -243,7 +247,7 @@ namespace CupMarker.AutoItScript
                 AutoItX.ControlSetText("Part Diameter", "", "Edit1", parameters.PartDiameter.ToString("F1"));
                 AutoItX.ControlClick("Part Diameter", "", "Button1");
 
-
+                
 
 
             }

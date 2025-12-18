@@ -220,6 +220,11 @@ namespace CupMarker.ViewModels
 
             Y1 = y / 1600 * CanvasHeight;
             Y2 = Y1 + (height / 1600 * CanvasHeight);
+
+            if (Y1 < 10)
+                Y1 = 10;
+            if (Y2 > CanvasHeight)
+                Y2 = CanvasHeight - 10;
         }
 
         [RelayCommand]

@@ -66,5 +66,24 @@ namespace CupMarker.Views
             viewModel.CanvasHeight = e.NewSize.Height;
         }
 
+
+        private void BarcodeInput_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            var tb = sender as TextBox;
+            if (tb != null)
+                tb.SelectAll();
+        }
+
+        private void BarcodeInput_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var tb = sender as TextBox;
+
+            // If the textbox is not yet focused, focus it and prevent the click from placing the cursor
+            if (tb != null && !tb.IsKeyboardFocusWithin)
+            {
+                e.Handled = true;
+                tb.Focus();
+            }
+        }
     }
 }
